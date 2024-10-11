@@ -1,0 +1,31 @@
+\documentclass{standalone}
+	\usepackage{tikz}
+		\graphicspath{ {figures/AM_5_254/} }
+	\begin{document}
+\begin{tikzpicture}[node distance=0.01cm and 3cm]
+ \node[anchor=center] (0) at (0,-0.8) { 5 \ (block3\_conv1) };
+\node[anchor=center] at (6,-0.8) { 6 \ (block3\_conv2) };
+ \foreach \label [count=\i] in {L4_F222.png,L4_F2.png,L4_F254.png,L4_F50.png,L4_F15.png,L4_F210.png,L4_F130.png,L4_F157.png,L4_F203.png,L4_F17.png,L4_F88.png,L4_F252.png,L4_F156.png,L4_F126.png,L4_F200.png,L4_F155.png,L4_F79.png} { 
+ 
+	\node[draw=none] (\i) at (0,-\i*6em) {\includegraphics[width=0.3\textwidth]{\label} }; 
+  }
+\node[] (R) at (6,-9*6em) {\includegraphics[width=0.3\textwidth]{ L5_F254.png } }; % Adjust the y-coordinate to center
+ \draw (1.east) -- (R) node[pos=1, circle, draw, fill=white, minimum size=12pt, inner sep=0pt] {-}; 
+ \draw (2.east) -- (R) node[pos=1, circle, draw, fill=white, minimum size=12pt, inner sep=0pt] {+}; 
+ \draw (3.east) -- (R) node[pos=1, circle, draw, fill=white, minimum size=12pt, inner sep=0pt] {-}; 
+ \draw (4.east) -- (R) node[pos=1, circle, draw, fill=white, minimum size=12pt, inner sep=0pt] {-}; 
+ \draw (5.east) -- (R) node[pos=1, circle, draw, fill=white, minimum size=12pt, inner sep=0pt] {-}; 
+ \draw (6.east) -- (R) node[pos=1, circle, draw, fill=white, minimum size=12pt, inner sep=0pt] {-}; 
+ \draw (7.east) -- (R) node[pos=1, circle, draw, fill=white, minimum size=12pt, inner sep=0pt] {+}; 
+ \draw (8.east) -- (R);
+ \draw (9.east) -- (R);
+ \draw (10.east) -- (R) node[pos=1, circle, draw, fill=white, minimum size=4pt, inner sep=0pt] {}; 
+ \draw (11.east) -- (R) node[pos=1, circle, draw, fill=white, minimum size=12pt, inner sep=0pt] {-}; 
+ \draw (12.east) -- (R) node[pos=1, circle, draw, fill=white, minimum size=4pt, inner sep=0pt] {}; 
+ \draw (13.east) -- (R) node[pos=1, circle, draw, fill=white, minimum size=12pt, inner sep=0pt] {-}; 
+ \draw (14.east) -- (R) node[pos=1, circle, draw, fill=white, minimum size=12pt, inner sep=0pt] {+}; 
+ \draw (15.east) -- (R) node[pos=1, circle, draw, fill=white, minimum size=12pt, inner sep=0pt] {-}; 
+ \draw (16.east) -- (R) node[pos=1, circle, draw, fill=white, minimum size=4pt, inner sep=0pt] {}; 
+ \draw (17.east) -- (R) node[pos=1, circle, draw, fill=white, minimum size=4pt, inner sep=0pt] {}; 
+\end{tikzpicture}
+\end{document}

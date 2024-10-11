@@ -1,0 +1,17 @@
+\documentclass{standalone}
+	\usepackage{tikz}
+		\graphicspath{ {figures/AM_3_56/} }
+	\begin{document}
+\begin{tikzpicture}[node distance=0.01cm and 3cm]
+ \node[anchor=center] (0) at (0,-0.8) { 3 \ (block2\_conv1) };
+\node[anchor=center] at (6,-0.8) { 4 \ (block2\_conv2) };
+ \foreach \label [count=\i] in {L2_F54.png,L2_F65.png,L2_F107.png} { 
+ 
+	\node[draw=none] (\i) at (0,-\i*6em) {\includegraphics[width=0.3\textwidth]{\label} }; 
+  }
+\node[] (R) at (6,-2*6em) {\includegraphics[width=0.3\textwidth]{ L3_F56.png } }; % Adjust the y-coordinate to center
+ \draw (1.east) -- (R) node[pos=0.5, circle, draw, fill=white, minimum size=8pt, inner sep=0pt, scale=0.5] { 0.0 }; 
+ \draw (2.east) -- (R) node[pos=0.5, circle, draw, fill=white, minimum size=8pt, inner sep=0pt, scale=0.5] { 0.7 }; 
+ \draw (3.east) -- (R) node[pos=0.5, circle, draw, fill=white, minimum size=8pt, inner sep=0pt, scale=0.5] { 0.3 }; 
+\end{tikzpicture}
+\end{document}

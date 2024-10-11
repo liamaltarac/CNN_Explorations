@@ -1,0 +1,34 @@
+\documentclass{standalone}
+	\usepackage{tikz}
+		\graphicspath{ {figures/AM_5_252/} }
+	\begin{document}
+\begin{tikzpicture}[node distance=0.01cm and 3cm]
+ \node[anchor=center] (0) at (0,-0.8) { 5 \ (block3\_conv1) };
+\node[anchor=center] at (6,-0.8) { 6 \ (block3\_conv2) };
+ \foreach \label [count=\i] in {L4_F252.png,L4_F59.png,L4_F172.png,L4_F27.png,L4_F11.png,L4_F236.png,L4_F156.png,L4_F77.png,L4_F203.png,L4_F12.png,L4_F85.png,L4_F200.png,L4_F86.png,L4_F157.png,L4_F160.png,L4_F34.png,L4_F189.png,L4_F210.png,L4_F2.png,L4_F41.png} { 
+ 
+	\node[draw=none] (\i) at (0,-\i*6em) {\includegraphics[width=0.3\textwidth]{\label} }; 
+  }
+\node[] (R) at (6,-10.5*6em) {\includegraphics[width=0.3\textwidth]{ L5_F252.png } }; % Adjust the y-coordinate to center
+ \draw (1.east) -- (R) node[pos=0.5, circle, draw, fill=white, minimum size=8pt, inner sep=0pt, scale=0.5] { 1.0 }; 
+ \draw (2.east) -- (R) node[pos=0.5, circle, draw, fill=white, minimum size=8pt, inner sep=0pt, scale=0.5] { 0.4 }; 
+ \draw (3.east) -- (R) node[pos=0.5, circle, draw, fill=white, minimum size=8pt, inner sep=0pt, scale=0.5] { 1.0 }; 
+ \draw (4.east) -- (R) node[pos=0.5, circle, draw, fill=white, minimum size=8pt, inner sep=0pt, scale=0.5] { 1.0 }; 
+ \draw (5.east) -- (R) node[pos=0.5, circle, draw, fill=white, minimum size=8pt, inner sep=0pt, scale=0.8] {$-$}; 
+ \draw (6.east) -- (R) node[pos=0.5, circle, draw, fill=white, minimum size=8pt, inner sep=0pt, scale=0.5] { 0.0 }; 
+ \draw (7.east) -- (R) node[pos=0.5, circle, draw, fill=white, minimum size=8pt, inner sep=0pt, scale=0.5] { 0.7 }; 
+ \draw (8.east) -- (R) node[pos=0.5, circle, draw, fill=white, minimum size=8pt, inner sep=0pt, scale=0.5] { 0.9 }; 
+ \draw (9.east) -- (R) node[pos=0.5, circle, draw, fill=white, minimum size=8pt, inner sep=0pt, scale=0.8] {$+$}; 
+ \draw (10.east) -- (R) node[pos=0.5, circle, draw, fill=white, minimum size=8pt, inner sep=0pt, scale=0.8] {$+$}; 
+ \draw (11.east) -- (R) node[pos=0.5, circle, draw, fill=white, minimum size=8pt, inner sep=0pt, scale=0.5] { 0.5 }; 
+ \draw (12.east) -- (R) node[pos=0.5, circle, draw, fill=white, minimum size=8pt, inner sep=0pt, scale=0.5] { 0.1 }; 
+ \draw (13.east) -- (R) node[pos=0.5, circle, draw, fill=white, minimum size=8pt, inner sep=0pt, scale=0.5] { 0.6 }; 
+ \draw (14.east) -- (R) node[pos=0.5, circle, draw, fill=white, minimum size=8pt, inner sep=0pt, scale=0.8] {$+$}; 
+ \draw (15.east) -- (R) node[pos=0.5, circle, draw, fill=white, minimum size=8pt, inner sep=0pt, scale=0.5] { 1.0 }; 
+ \draw (16.east) -- (R) node[pos=0.5, circle, draw, fill=white, minimum size=8pt, inner sep=0pt, scale=0.5] { 0.5 }; 
+ \draw (17.east) -- (R) node[pos=0.5, circle, draw, fill=white, minimum size=8pt, inner sep=0pt, scale=0.5] { 0.8 }; 
+ \draw (18.east) -- (R) node[pos=0.5, circle, draw, fill=white, minimum size=8pt, inner sep=0pt, scale=0.8] {$-$}; 
+ \draw (19.east) -- (R) node[pos=0.5, circle, draw, fill=white, minimum size=8pt, inner sep=0pt, scale=0.8] {$+$}; 
+ \draw (20.east) -- (R) node[pos=0.5, circle, draw, fill=white, minimum size=8pt, inner sep=0pt, scale=0.5] { 0.3 }; 
+\end{tikzpicture}
+\end{document}

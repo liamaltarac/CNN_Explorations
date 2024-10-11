@@ -1,0 +1,24 @@
+\documentclass{standalone}
+	\usepackage{tikz}
+		\graphicspath{ {figures/AM_10_23/} }
+	\begin{document}
+\begin{tikzpicture}[node distance=0.01cm and 3cm]
+ \node[anchor=center] (0) at (0,-0.8) { 10 \ (block4\_conv3) };
+\node[anchor=center] at (6,-0.8) { 11 \ (block5\_conv1) };
+ \foreach \label [count=\i] in {L9_F251.png,L9_F272.png,L9_F21.png,L9_F80.png,L9_F40.png,L9_F332.png,L9_F444.png,L9_F194.png,L9_F208.png,L9_F250.png} { 
+ 
+	\node[draw=none] (\i) at (0,-\i*6em) {\includegraphics[width=0.3\textwidth]{\label} }; 
+  }
+\node[] (R) at (6,-5.5*6em) {\includegraphics[width=0.3\textwidth]{ L10_F23.png } }; % Adjust the y-coordinate to center
+ \draw (1.east) -- (R) node[pos=0.5, circle, draw, fill=white, minimum size=8pt, inner sep=0pt, scale=0.5] { -1.0 }; 
+ \draw (2.east) -- (R) node[pos=0.5, circle, draw, fill=white, minimum size=8pt, inner sep=0pt, scale=0.8] {$-$}; 
+ \draw (3.east) -- (R) node[pos=0.5, circle, draw, fill=white, minimum size=8pt, inner sep=0pt, scale=0.5] { -1.0 }; 
+ \draw (4.east) -- (R) node[pos=0.5, circle, draw, fill=white, minimum size=8pt, inner sep=0pt, scale=0.8] {$-$}; 
+ \draw (5.east) -- (R) node[pos=0.5, circle, draw, fill=white, minimum size=8pt, inner sep=0pt, scale=0.5] { -0.2 }; 
+ \draw (6.east) -- (R) node[pos=0.5, circle, draw, fill=white, minimum size=8pt, inner sep=0pt, scale=0.5] { 0.0 }; 
+ \draw (7.east) -- (R) node[pos=0.5, circle, draw, fill=white, minimum size=8pt, inner sep=0pt, scale=0.5] { -0.5 }; 
+ \draw (8.east) -- (R) node[pos=0.5, circle, draw, fill=white, minimum size=8pt, inner sep=0pt, scale=0.5] { -0.9 }; 
+ \draw (9.east) -- (R) node[pos=0.5, circle, draw, fill=white, minimum size=8pt, inner sep=0pt, scale=0.5] { -0.9 }; 
+ \draw (10.east) -- (R) node[pos=0.5, circle, draw, fill=white, minimum size=8pt, inner sep=0pt, scale=0.5] { 0.8 }; 
+\end{tikzpicture}
+\end{document}

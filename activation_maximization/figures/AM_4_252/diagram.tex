@@ -1,0 +1,13 @@
+\documentclass{standalone}
+	\usepackage{tikz}
+        \graphicspath{ {figures/AM_4_252/} }
+	\begin{document}
+\begin{tikzpicture}[node distance=0.01cm and 3cm]
+ \node[anchor=center] (0) at (0,0.5) { $5 \ (\text{ block3_conv1  } )$ };
+ \node[anchor=center] at (6,0.5) { $4 \ (\text{ block2_conv2   } )$ };
+ \foreach \label [count=\i] in {L3_F56.png,L3_F55.png,L3_F125.png,L3_F113.png,L3_F81.png} { 
+ 
+    \node[draw=none] (\i) at (0,-\i*6em) {\includegraphics[width=0.3\textwidth]{\label} }; 
+  }
+\node[] (R) at (6,-3*6em) {\includegraphics[width=0.3\textwidth]{ L4_F252.png } }; % Adjust the y-coordinate to center
+h]{ L4_F252.png } }; % Adjust the y-coordinate to center

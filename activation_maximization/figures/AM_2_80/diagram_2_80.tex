@@ -1,0 +1,16 @@
+\documentclass{standalone}
+	\usepackage{tikz}
+        \graphicspath{ {figures/AM_2_80/} }
+	\begin{document}
+\begin{tikzpicture}[node distance=0.01cm and 3cm]
+ \node[anchor=center] (0) at (0,-0.8) { 2 \ (block1\_conv2) };
+\node[anchor=center] at (6,-0.8) { 3 \ (block2\_conv1) };
+ \foreach \label [count=\i] in {L1_F18.png,L1_F52.png} { 
+ 
+    \node[draw=none] (\i) at (0,-\i*6em) {\includegraphics[width=0.3\textwidth]{\label} }; 
+  }
+\node[] (R) at (6,-1.5*6em) {\includegraphics[width=0.3\textwidth]{ L2_F80.png } }; % Adjust the y-coordinate to center
+ \draw (1.east) -- (R);
+ \draw (2.east) -- (R);
+\end{tikzpicture}
+\end{document}

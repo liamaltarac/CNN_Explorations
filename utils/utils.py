@@ -4,10 +4,13 @@ from scipy import ndimage
 
 from tensorflow.nn import depthwise_conv2d
 from tensorflow.math import multiply, reduce_sum, reduce_mean,reduce_euclidean_norm, sin, cos, abs
-from tensorflow import stack, concat, expand_dims
+from tensorflow import stack, concat, expand_dims, reshape, transpose
 
 import tensorflow_probability as tfp
 from scipy.fftpack import dct, idct
+
+from tensorflow.image import flip_up_down, flip_left_right, rot90
+
 
 
 def get_filter(model, layer):
@@ -31,16 +34,45 @@ def get_filter(model, layer):
     #print(layer.name, filters.shape)
 
 
+def getDominantAngle(filters):
+	theta = getSobelTF(filters)
+	print(filters.shape)
+	s, a = getSymAntiSymTF(filters)
+	a_mag = reduce_euclidean_norm(a, axis=[0,1])
+	s_mag = reduce_euclidean_norm(s, axis=[0,1])
+
+	mag = reduce_euclidean_norm(filters, axis=[0,1])
+
+
+	domTheta = []
+	for i in range(filters.shape[-1]):
+		x =(a_mag[:,i]*np.cos((theta[:,i]))).numpy()
+		y =( a_mag[:,i]*np.sin((theta[:,i]))).numpy()
+
+
+		cov = np.cov([x,y])
+		e_val, e_vec = np.linalg.eig(cov)
+		e_vec = e_vec[:, np.argmax(e_val)]
+		e_val = np.max(e_val)
+		if np.sign(e_vec[0]) != np.sign(x[np.argmax(np.abs(x))]):
+			e_vec *= -1
+		domTheta.append(np.arctan2(e_vec[1], e_vec[0]))
+	#x =a_mag[:,f_num]*np.cos((theta[:,f_num]))
+	#y = a_mag[:,f_num]*np.sin((theta[:,f_num]))
+
+	return np.array(domTheta)
+
 
 def getSobelTF(f):
 
-    sobel_h = np.array([[1., 2., 1.], [0., 0., 0.], [-1., -2., -1.]], dtype=np.float32).reshape((3, 3, 1, 1) )/-4
-    sobel_v = np.array([[1., 0., -1.], [2., 0., -2.], [1., 0., -1.]], dtype=np.float32).reshape((3, 3, 1, 1))/-4    
+    sobel_v = np.expand_dims(np.expand_dims(np.array([[-1., -2., -1.], [0., 0., 0.], [1., 2., 1.]], dtype=np.float32)/-4., -1),-1)
+    sobel_h = np.expand_dims(np.expand_dims(np.array([[1., 0., -1.], [2., 0., -2.], [1., 0., -1.]], dtype=np.float32)/-4., -1) ,-1) 
+    #print(sobel_h, sobel_v)
 
     s_h = reduce_sum(multiply(f, sobel_h), axis=[0,1])
     s_v = reduce_sum(multiply(f, sobel_v), axis=[0,1])
 
-    return (np.arctan2(s_h,s_v))
+    return (np.arctan2(s_v,s_h))
 
 
 def getSymAntiSymTF(filter):
@@ -67,7 +99,25 @@ def getSymAntiSymTF(filter):
         
     anti = filter - sym
 
-    return sym, anti
+    '''f_reshaped = transpose(filter, perm=[3, 0, 1, 2])
+    mat_flip_x = flip_left_right(f_reshaped)
+
+    mat_flip_y = flip_up_down(f_reshaped)
+    mat_flip_xy = flip_left_right(flip_up_down(f_reshaped))
+    print(mat_flip_x.shape, mat_flip_y.shape, mat_flip_xy.shape)
+    sum = f_reshaped + mat_flip_x + mat_flip_y + mat_flip_xy
+    
+    mat_sum_rot_90 = rot90(sum)
+    #gc.collect()
+    #print("mat_sum_rot_90 shape " , mat_sum_rot_90.shape, self._name)
+    
+    #print("OUT SHAPE," , out.shape)
+    out = (sum + mat_sum_rot_90) / 8
+    
+    sym = transpose(out, perm=[1, 2, 3, 0])
+    anti = filter - sym'''
+    return  sym, anti
+
 
 def topKfilters(model, layer_num, k=10):
     #print(i, l.name)
@@ -87,8 +137,8 @@ def topKchannels(model, layer_num, f_num, k=10):
     mag = reduce_euclidean_norm(filters, axis=[0,1])**2
     #avg_mag = reduce_mean(mag, axis=0)
     idx = list(range(mag.shape[-1]))
-    if int((k/100)*len(idx)) == 0:
-        return idx
+    '''if int((k/100)*len(idx)) == 0:
+        return idx'''
     
     idx = [x for _, x in sorted(zip( mag, idx), reverse=True)]
     return idx[:int(np.floor(len(idx)*k/100))]
@@ -100,3 +150,5 @@ def dct2(a):
 # implement 2D IDCT
 def idct2(a):
     return idct(idct(a.T, norm='ortho').T, norm='ortho')    
+
+def replaceWithAntiSymLayer(model, layer_name)
