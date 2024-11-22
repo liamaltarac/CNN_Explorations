@@ -151,4 +151,3 @@ def dct2(a):
 def idct2(a):
     return idct(idct(a.T, norm='ortho').T, norm='ortho')    
 
-def replaceWithAntiSymLayer(model, layer_name)
