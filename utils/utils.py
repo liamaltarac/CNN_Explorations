@@ -11,6 +11,7 @@ from scipy.fftpack import dct, idct
 
 from tensorflow.image import flip_up_down, flip_left_right, rot90
 
+from cv2 import getDerivKernels
 
 
 def get_filter(model, layer):
@@ -65,14 +66,28 @@ def getDominantAngle(filters):
 
 def getSobelTF(f):
 
-    sobel_v = np.expand_dims(np.expand_dims(np.array([[-1., -2., -1.], [0., 0., 0.], [1., 2., 1.]], dtype=np.float32)/-4., -1),-1)
-    sobel_h = np.expand_dims(np.expand_dims(np.array([[1., 0., -1.], [2., 0., -2.], [1., 0., -1.]], dtype=np.float32)/-4., -1) ,-1) 
+    ksize = f.shape[0]
+    sobel = getDerivKernels(1,0,ksize=ksize, normalize=True)
+    sobel_v = -np.expand_dims(np.expand_dims(np.outer(sobel[0], sobel[1]), -1),-1)
+    sobel = getDerivKernels(0,1,ksize=ksize, normalize=True)
+    sobel_h = np.expand_dims(np.expand_dims(np.outer(sobel[0], sobel[1]), -1),-1)
+
     #print(sobel_h, sobel_v)
 
     s_h = reduce_sum(multiply(f, sobel_h), axis=[0,1])
     s_v = reduce_sum(multiply(f, sobel_v), axis=[0,1])
 
+
+    '''sobel_v = np.expand_dims(np.expand_dims(np.array([[-1., -2., -1.], [0., 0., 0.], [1., 2., 1.]], dtype=np.float32)/-4., -1),-1)
+    sobel_h = np.expand_dims(np.expand_dims(np.array([[1., 0., -1.], [2., 0., -2.], [1., 0., -1.]], dtype=np.float32)/-4., -1) ,-1) 
+    #print(sobel_h, sobel_v)
+
+    s_h = reduce_sum(multiply(f, sobel_h), axis=[0,1])
+    s_v = reduce_sum(multiply(f, sobel_v), axis=[0,1])'''
+
     return (np.arctan2(s_v,s_h))
+
+
 
 
 def getSymAntiSymTF(filter):
