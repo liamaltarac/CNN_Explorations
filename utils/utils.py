@@ -16,26 +16,26 @@ from cv2 import getDerivKernels
 
 def get_filter(model, layer):
 
-    conv_layers = []
-    for l in model.layers:
-        if 'conv2d' in str(type(l)).lower():
-            if l.kernel_size == (3,3):
-                conv_layers.append(l)
+	conv_layers = []
+	for l in model.layers:
+		if 'conv2d' in str(type(l)).lower():
+			if l.kernel_size == (3,3):
+				conv_layers.append(l)
 
-    layer = conv_layers[layer]
-    # check for convolutional layer
-    if 'conv' not in layer.name:
-        raise ValueError('Layer must be a conv. layer')
-    # get filter weights
-    filters, biases = layer.get_weights()
-    #print("biases shape : ", biases.shape)
-    #print("filters shape : ", filters.shape)
-    #print(layer.name)
-    return (filters)
-    #print(layer.name, filters.shape)
+	layer = conv_layers[layer]
+	# check for convolutional layer
+	if 'conv' not in layer.name:
+		raise ValueError('Layer must be a conv. layer')
+	# get filter weights
+	filters, biases = layer.get_weights()
+	#print("biases shape : ", biases.shape)
+	#print("filters shape : ", filters.shape)
+	#print(layer.name)
+	return (filters)
+	#print(layer.name, filters.shape)
 
 
-def getDominantAngle(filters):
+'''def getDominantAngle(filters):
 	theta = getSobelTF(filters)
 	print(filters.shape)
 	s, a = getSymAntiSymTF(filters)
@@ -61,108 +61,141 @@ def getDominantAngle(filters):
 	#x =a_mag[:,f_num]*np.cos((theta[:,f_num]))
 	#y = a_mag[:,f_num]*np.sin((theta[:,f_num]))
 
+	return np.array(domTheta)'''
+
+
+def getDominantAngle(filters):
+	domTheta = []
+	_, a = getSymAntiSymTF(filters)
+	a_mag = reduce_euclidean_norm(a, axis=[0,1])
+	theta = getSobelTF(filters)
+	for i in range(filters.shape[-1]):
+
+		#print(a_mag.shape)
+		x =a_mag[:, i]*np.cos((theta[:, i]))
+		y = a_mag[:, i]*np.sin((theta[:, i]))
+
+
+
+		cov = np.cov([x,y])
+		e_val, e_vec = np.linalg.eigh(cov)
+		e_vec = e_vec[:, np.argmax(e_val)]
+		e_val = np.max(e_val)
+
+		new_vec =    ((e_vec[0] * x + e_vec[1]*y)/(e_vec[0]**2+e_vec[1]**2))[:, None] * e_vec
+		new_vec = np.mean(new_vec, axis=0)
+
+		'''if any((np.sign(new_vec)-np.sign(e_vec))!=0) :
+			print("DOWN", e_vec, new_vec)
+		else:
+			print("OK", e_vec, new_vec)'''
+		'''if np.sign(e_vec[0]) != np.sign(x[np.argmax(np.abs(x))]):
+			e_vec *= -1'''
+			#print(e_val, e_vec)
+		#print(np.arctan2(e_vec[1], e_vec[0]))
+		domTheta.append(np.arctan2(new_vec[1], new_vec[0]))
 	return np.array(domTheta)
 
 
 def getSobelTF(f):
 
-    ksize = f.shape[0]
-    sobel = getDerivKernels(1,0,ksize=ksize, normalize=True)
-    sobel_v = -np.expand_dims(np.expand_dims(np.outer(sobel[0], sobel[1]), -1),-1)
-    sobel = getDerivKernels(0,1,ksize=ksize, normalize=True)
-    sobel_h = np.expand_dims(np.expand_dims(np.outer(sobel[0], sobel[1]), -1),-1)
+	ksize = f.shape[0]
+	sobel = getDerivKernels(1,0,ksize=ksize, normalize=True)
+	sobel_v = -np.expand_dims(np.expand_dims(np.outer(sobel[0], sobel[1]), -1),-1)
+	sobel = getDerivKernels(0,1,ksize=ksize, normalize=True)
+	sobel_h = np.expand_dims(np.expand_dims(np.outer(sobel[0], sobel[1]), -1),-1)
 
-    #print(sobel_h, sobel_v)
+	#print(sobel_h, sobel_v)
 
-    s_h = reduce_sum(multiply(f, sobel_h), axis=[0,1])
-    s_v = reduce_sum(multiply(f, sobel_v), axis=[0,1])
+	s_h = reduce_sum(multiply(f, sobel_h), axis=[0,1])
+	s_v = reduce_sum(multiply(f, sobel_v), axis=[0,1])
 
 
-    '''sobel_v = np.expand_dims(np.expand_dims(np.array([[-1., -2., -1.], [0., 0., 0.], [1., 2., 1.]], dtype=np.float32)/-4., -1),-1)
-    sobel_h = np.expand_dims(np.expand_dims(np.array([[1., 0., -1.], [2., 0., -2.], [1., 0., -1.]], dtype=np.float32)/-4., -1) ,-1) 
-    #print(sobel_h, sobel_v)
+	'''sobel_v = np.expand_dims(np.expand_dims(np.array([[-1., -2., -1.], [0., 0., 0.], [1., 2., 1.]], dtype=np.float32)/-4., -1),-1)
+	sobel_h = np.expand_dims(np.expand_dims(np.array([[1., 0., -1.], [2., 0., -2.], [1., 0., -1.]], dtype=np.float32)/-4., -1) ,-1) 
+	#print(sobel_h, sobel_v)
 
-    s_h = reduce_sum(multiply(f, sobel_h), axis=[0,1])
-    s_v = reduce_sum(multiply(f, sobel_v), axis=[0,1])'''
+	s_h = reduce_sum(multiply(f, sobel_h), axis=[0,1])
+	s_v = reduce_sum(multiply(f, sobel_v), axis=[0,1])'''
 
-    return (np.arctan2(s_v,s_h))
+	return (np.arctan2(s_v,s_h))
 
 
 
 
 def getSymAntiSymTF(filter):
 
-    #patches = extract_image_patches(filters, [1, k, k, 1],  [1, k, k, 1], rates = [1,1,1,1] , padding = 'VALID')
-    #print(patches)
-    a = filter[0,0,:,:]
-    b = filter[0,1,:,:]
-    c = filter[0,2,:,:]
-    d = filter[1,0,:,:]
-    e = filter[1,1,:,:]
-    f = filter[1,2,:,:]
-    g = filter[2,0,:,:]
-    h = filter[2,1,:,:]
-    i = filter[2,2,:,:]
+	#patches = extract_image_patches(filters, [1, k, k, 1],  [1, k, k, 1], rates = [1,1,1,1] , padding = 'VALID')
+	#print(patches)
+	a = filter[0,0,:,:]
+	b = filter[0,1,:,:]
+	c = filter[0,2,:,:]
+	d = filter[1,0,:,:]
+	e = filter[1,1,:,:]
+	f = filter[1,2,:,:]
+	g = filter[2,0,:,:]
+	h = filter[2,1,:,:]
+	i = filter[2,2,:,:]
 
-    fs1 = expand_dims(a+c+g+i, 0)/4
-    fs2 = expand_dims(b+d+f+h,0)/4
-    fs3= expand_dims(e, 0)
+	fs1 = expand_dims(a+c+g+i, 0)/4
+	fs2 = expand_dims(b+d+f+h,0)/4
+	fs3= expand_dims(e, 0)
 
-    sym = stack([concat([fs1, fs2, fs1],  axis=0), 
-                         concat([fs2, fs3, fs2], axis=0),
-                         concat([fs1, fs2, fs1], axis=0)])
-        
-    anti = filter - sym
+	sym = stack([concat([fs1, fs2, fs1],  axis=0), 
+						 concat([fs2, fs3, fs2], axis=0),
+						 concat([fs1, fs2, fs1], axis=0)])
+		
+	anti = filter - sym
 
-    '''f_reshaped = transpose(filter, perm=[3, 0, 1, 2])
-    mat_flip_x = flip_left_right(f_reshaped)
+	'''f_reshaped = transpose(filter, perm=[3, 0, 1, 2])
+	mat_flip_x = flip_left_right(f_reshaped)
 
-    mat_flip_y = flip_up_down(f_reshaped)
-    mat_flip_xy = flip_left_right(flip_up_down(f_reshaped))
-    print(mat_flip_x.shape, mat_flip_y.shape, mat_flip_xy.shape)
-    sum = f_reshaped + mat_flip_x + mat_flip_y + mat_flip_xy
-    
-    mat_sum_rot_90 = rot90(sum)
-    #gc.collect()
-    #print("mat_sum_rot_90 shape " , mat_sum_rot_90.shape, self._name)
-    
-    #print("OUT SHAPE," , out.shape)
-    out = (sum + mat_sum_rot_90) / 8
-    
-    sym = transpose(out, perm=[1, 2, 3, 0])
-    anti = filter - sym'''
-    return  sym, anti
+	mat_flip_y = flip_up_down(f_reshaped)
+	mat_flip_xy = flip_left_right(flip_up_down(f_reshaped))
+	print(mat_flip_x.shape, mat_flip_y.shape, mat_flip_xy.shape)
+	sum = f_reshaped + mat_flip_x + mat_flip_y + mat_flip_xy
+	
+	mat_sum_rot_90 = rot90(sum)
+	#gc.collect()
+	#print("mat_sum_rot_90 shape " , mat_sum_rot_90.shape, self._name)
+	
+	#print("OUT SHAPE," , out.shape)
+	out = (sum + mat_sum_rot_90) / 8
+	
+	sym = transpose(out, perm=[1, 2, 3, 0])
+	anti = filter - sym'''
+	return  sym, anti
 
 
 def topKfilters(model, layer_num, k=10):
-    #print(i, l.name)
-    filters = get_filter(model, layer_num)
+	#print(i, l.name)
+	filters = get_filter(model, layer_num)
 
-    mag = reduce_euclidean_norm(filters, axis=[0,1])**2
-    avg_mag = reduce_mean(mag, axis=0)
-    idx = list(range(mag.shape[-1]))
-    
-    idx = [x for _, x in sorted(zip( avg_mag, idx), reverse=True)]
-    return idx[:int(np.floor(len(idx)*k/100))]
+	mag = reduce_euclidean_norm(filters, axis=[0,1])**2
+	avg_mag = reduce_mean(mag, axis=0)
+	idx = list(range(mag.shape[-1]))
+	
+	idx = [x for _, x in sorted(zip( avg_mag, idx), reverse=True)]
+	return idx[:int(np.floor(len(idx)*k/100))]
 
 def topKchannels(model, layer_num, f_num, k=10):
-    #print(i, l.name)
-    filters = get_filter(model, layer_num)[:,:,:,f_num]
+	#print(i, l.name)
+	filters = get_filter(model, layer_num)[:,:,:,f_num]
 
-    mag = reduce_euclidean_norm(filters, axis=[0,1])**2
-    #avg_mag = reduce_mean(mag, axis=0)
-    idx = list(range(mag.shape[-1]))
-    '''if int((k/100)*len(idx)) == 0:
-        return idx'''
-    
-    idx = [x for _, x in sorted(zip( mag, idx), reverse=True)]
-    return idx[:int(np.floor(len(idx)*k/100))]
+	mag = reduce_euclidean_norm(filters, axis=[0,1])**2
+	#avg_mag = reduce_mean(mag, axis=0)
+	idx = list(range(mag.shape[-1]))
+	'''if int((k/100)*len(idx)) == 0:
+		return idx'''
+	
+	idx = [x for _, x in sorted(zip( mag, idx), reverse=True)]
+	return idx[:int(np.floor(len(idx)*k/100))]
 
 
 def dct2(a):
-    return dct(dct(a.T, norm='ortho').T, norm='ortho')
+	return dct(dct(a.T, norm='ortho').T, norm='ortho')
 
 # implement 2D IDCT
 def idct2(a):
-    return idct(idct(a.T, norm='ortho').T, norm='ortho')    
+	return idct(idct(a.T, norm='ortho').T, norm='ortho')    
 
