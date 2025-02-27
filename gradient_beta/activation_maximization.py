@@ -59,7 +59,7 @@ def initialize_image():
 def visualize_filter(filter_index):
     # We run gradient ascent for 20 steps
     iterations = 200
-    learning_rate = 1.
+    learning_rate = 0.1
     img = initialize_image()
 
     for iteration in range(iterations):
